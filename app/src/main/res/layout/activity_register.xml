@@ -1,21 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:gravity="center"
     android:background="@drawable/background"
     tools:context=".RegisterActivity">
+
+
+    <ImageView
+        android:id="@+id/backButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/arrow_50"
+        android:contentDescription="@string/back"
+        android:layout_margin="25dp"
+        android:padding="8dp" />
+
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="30dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginBottom="30dp"
         app:cardCornerRadius="30dp"
-        app:cardElevation="20dp">
+        app:cardElevation="20dp"
+        android:layout_below="@id/backButton">
 
 
         <LinearLayout
@@ -93,7 +106,7 @@
                 android:id="@+id/registerButton"
                 android:textSize="18sp"
                 android:layout_marginTop="20dp"
-                android:backgroundTint="@color/black"
+                android:backgroundTint="#09104C"
                 app:cornerRadius = "20dp"/>
 
 
@@ -102,4 +115,4 @@
     </androidx.cardview.widget.CardView>
 
 
-</LinearLayout>
+</RelativeLayout>

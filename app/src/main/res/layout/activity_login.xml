@@ -10,6 +10,7 @@
     android:background="@drawable/background"
     tools:context=".LoginActivity">
 
+
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -67,16 +68,27 @@
                 android:id="@+id/loginButton"
                 android:textSize="18sp"
                 android:layout_marginTop="30dp"
-                android:backgroundTint="@color/black"
+                android:backgroundTint="#09104C"
                 app:cornerRadius = "20dp"/>
+
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
-                android:text="@string/register"
+                android:text="Sign Up"
                 android:id="@+id/RegisterButton"
                 android:textSize="18sp"
                 android:layout_marginTop="20dp"
-                android:backgroundTint="@color/black"
+                android:backgroundTint="#09104C"
+                app:cornerRadius = "20dp"/>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:text="Continue Without Login"
+                android:id="@+id/withoutLoginButton"
+                android:textSize="18sp"
+                android:layout_marginTop="20dp"
+                android:backgroundTint="#09104C"
                 app:cornerRadius = "20dp"/>
 
 

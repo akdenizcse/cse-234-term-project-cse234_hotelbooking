@@ -3,7 +3,7 @@
     android:shape="rectangle">
     <stroke
         android:width="2dp"
-        android:color="@color/black"/>
+        android:color="#09104C"/>
     <corners
         android:radius="30dp"/>
 </shape>

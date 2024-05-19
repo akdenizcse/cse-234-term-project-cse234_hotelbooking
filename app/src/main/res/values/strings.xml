@@ -16,4 +16,17 @@
     <string name="back">back</string>
     <string name="popular_hotels">Popular Hotels</string>
     <string name="see_all">See All</string>
+    <string name="profile">Profile</string>
+    <string name="emre_semiz">Emre Semiz</string>
+    <string name="password2">Password:</string>
+    <string name="change">Change</string>
+    <string name="mobile">Mobile:</string>
+    <string name="_1234_123_9874">1234-123-9874</string>
+    <string name="tell">Tell:</string>
+    <string name="_1234_123_9874_2">1234-123-9874</string>
+    <string name="address">Address:</string>
+    <string name="ny_street_21_no_34">NY- Street 21-no 34</string>
+    <string name="postalcode">PostalCode:</string>
+    <string name="_9871234567">9871234567</string>
+    <string name="search_results">Search Results</string>
 </resources>
