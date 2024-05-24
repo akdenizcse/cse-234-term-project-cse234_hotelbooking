@@ -108,7 +108,7 @@ Users can track their current and past bookings on the My Trips page. On this sc
 
 
 ### Figma Prototype
-[Prototype of Hotel Booking App](https://www.figma.com/proto/74UEYrOmCHKWYumQRQpVLf/Hotel-Booking?node-id=1-156&t=rLYzImwN4wW018qg-1&scaling=min-zoom&page-id=0%3A1&starting-point-node-id=1%3A185)
+[Prototype of Hotel Booking App](https://www.figma.com/proto/74UEYrOmCHKWYumQRQpVLf/Hotel-Booking?node-id=0-1&t=e5dS1maIqb1FxyyO-0&scaling=min-zoom&page-id=0%3A1&starting-point-node-id=1%3A185)
 
 ### Figma Design
 [Design of Hotel Booking App](https://www.figma.com/design/74UEYrOmCHKWYumQRQpVLf/Hotel-Booking?node-id=0%3A1&t=0JRMpkxIaXyo4geT-1)
