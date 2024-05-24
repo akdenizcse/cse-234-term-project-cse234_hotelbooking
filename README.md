@@ -32,7 +32,7 @@ In addition to these pages, a comment and rating page, forgot password page and 
 Since i am alone, I do all the tasks alone.
 
 ## Application Screens
-Recipe Finder Mobile Application consists of several screens that make browsing and managing recipes easy and efficient. These include:
+Hotel Booking Mobile Application consists of several screens that make browsing and managing recipes easy and efficient. These include:
 
 01. [Splash Screen](#1-splash-screen): Introduces our app with its logo.  
 02. [Login Screen](#2-login-screen): Enables users and admins to log in.
