@@ -7,6 +7,7 @@ I am coding the Hotel Booking system by working with Kotlin and XML. The followi
 -	Booking a room
 -	Cancelling a book
 -	Rate and comment the room if stayed
+
 User authentication / registration from the above features are now available. Most of the UI is available. New pages and features not added above will be added until the final report. The pages currently available are as follows:
 -	Splash Screen
 -	Login Page
