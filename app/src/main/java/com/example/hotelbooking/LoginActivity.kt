@@ -29,11 +29,6 @@ class LoginActivity : AppCompatActivity() {
             }
         }
 
-        binding.withoutLoginButton.setOnClickListener {
-            val intent = Intent(this, Dashboard::class.java)
-            startActivity(intent)
-        }
-
         binding.RegisterButton.setOnClickListener {
             val intent = Intent(this, RegisterActivity::class.java)
             startActivity(intent)
@@ -44,9 +39,15 @@ class LoginActivity : AppCompatActivity() {
         auth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
-                    Toast.makeText(this, "Login Successful!", Toast.LENGTH_SHORT).show()
-                    val intent = Intent(this, Dashboard::class.java)
-                    startActivity(intent)
+                    if (email == "admin123@gmail.com" && password == "admin123") {
+                        Toast.makeText(this, "Admin Login Successful!", Toast.LENGTH_SHORT).show()
+                        val intent = Intent(this, AdminPageActivity::class.java)
+                        startActivity(intent)
+                    } else {
+                        Toast.makeText(this, "Login Successful!", Toast.LENGTH_SHORT).show()
+                        val intent = Intent(this, Dashboard::class.java)
+                        startActivity(intent)
+                    }
                     finish()
                 } else {
                     Toast.makeText(this, "Login Failed! ${task.exception?.message}", Toast.LENGTH_SHORT).show()
