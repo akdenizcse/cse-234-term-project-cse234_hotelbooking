@@ -8,13 +8,13 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.example.hotelbooking.databinding.ActivityAddHotelBinding
-import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 
 class AddHotelActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAddHotelBinding
-    private lateinit var firestore: FirebaseFirestore
+    private lateinit var database: FirebaseDatabase
     private lateinit var storage: FirebaseStorage
     private lateinit var storageRef: StorageReference
     private var selectedImageUri: Uri? = null
@@ -24,7 +24,7 @@ class AddHotelActivity : AppCompatActivity() {
         binding = ActivityAddHotelBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        firestore = FirebaseFirestore.getInstance()
+        database = FirebaseDatabase.getInstance()
         storage = FirebaseStorage.getInstance()
         storageRef = storage.reference.child("hotel_images")
 
@@ -71,31 +71,21 @@ class AddHotelActivity : AppCompatActivity() {
                     taskSnapshot.storage.downloadUrl.addOnSuccessListener { uri ->
                         val hotel = Hotel(hotelName, hotelLocation, hotelDescription, uri.toString())
 
-                        firestore.collection("hotels")
-                            .add(hotel)
-                            .addOnSuccessListener { documentReference ->
-                                Toast.makeText(
-                                    this,
-                                    "Hotel Added Successfully with ID: ${documentReference.id}",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                                finish()
-                            }
-                            .addOnFailureListener { e ->
-                                Toast.makeText(
-                                    this,
-                                    "Failed to Add Hotel! ${e.message}",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
+                        val hotelId = database.reference.child("hotels").push().key
+                        if (hotelId != null) {
+                            database.reference.child("hotels").child(hotelId).setValue(hotel)
+                                .addOnSuccessListener {
+                                    Toast.makeText(this, "Hotel Added Successfully", Toast.LENGTH_SHORT).show()
+                                    finish()
+                                }
+                                .addOnFailureListener { e ->
+                                    Toast.makeText(this, "Failed to Add Hotel! ${e.message}", Toast.LENGTH_SHORT).show()
+                                }
+                        }
                     }
                 }
                 .addOnFailureListener { e ->
-                    Toast.makeText(
-                        this,
-                        "Failed to Upload Image! ${e.message}",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    Toast.makeText(this, "Failed to Upload Image! ${e.message}", Toast.LENGTH_SHORT).show()
                 }
         }
     }

@@ -9,24 +9,25 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.example.hotelbooking.databinding.ActivityAddRoomBinding
-import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 
 class AddRoomActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAddRoomBinding
-    private lateinit var firestore: FirebaseFirestore
+    private lateinit var database: FirebaseDatabase
     private lateinit var storage: FirebaseStorage
     private lateinit var storageRef: StorageReference
     private var selectedImageUri: Uri? = null
     private var hotelList: MutableList<String> = mutableListOf()
+    private var hotelIdList: MutableList<String> = mutableListOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAddRoomBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        firestore = FirebaseFirestore.getInstance()
+        database = FirebaseDatabase.getInstance()
         storage = FirebaseStorage.getInstance()
         storageRef = storage.reference.child("room_images")
 
@@ -42,10 +43,11 @@ class AddRoomActivity : AppCompatActivity() {
             val bedCount = binding.bedCount.text.toString()
             val wifiAvailable = binding.wifiSwitch.isChecked
             val bathroomCount = binding.bathroomCount.text.toString()
-            val selectedHotel = binding.hotelSpinner.selectedItem?.toString()
+            val selectedHotelIndex = binding.hotelSpinner.selectedItemPosition
 
-            if (roomName.isNotEmpty() && roomPrice.isNotEmpty() && bedCount.isNotEmpty() && bathroomCount.isNotEmpty() && selectedHotel != null && selectedImageUri != null) {
-                uploadImageToStorage(selectedHotel, roomName, roomPrice, bedCount, wifiAvailable, bathroomCount)
+            if (roomName.isNotEmpty() && roomPrice.isNotEmpty() && bedCount.isNotEmpty() && bathroomCount.isNotEmpty() && selectedHotelIndex >= 0 && selectedImageUri != null) {
+                val selectedHotelId = hotelIdList[selectedHotelIndex]
+                uploadImageToStorage(selectedHotelId, roomName, roomPrice, bedCount, wifiAvailable, bathroomCount)
             } else {
                 Toast.makeText(this, "All fields are required!", Toast.LENGTH_SHORT).show()
             }
@@ -70,9 +72,10 @@ class AddRoomActivity : AppCompatActivity() {
     }
 
     private fun loadHotelNames() {
-        firestore.collection("hotels").get().addOnSuccessListener { documents ->
-            for (document in documents) {
-                hotelList.add(document.getString("name") ?: "")
+        database.reference.child("hotels").get().addOnSuccessListener { snapshot ->
+            for (hotelSnapshot in snapshot.children) {
+                hotelList.add(hotelSnapshot.child("name").getValue(String::class.java) ?: "")
+                hotelIdList.add(hotelSnapshot.key ?: "")
             }
             val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, hotelList)
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
@@ -82,28 +85,23 @@ class AddRoomActivity : AppCompatActivity() {
         }
     }
 
-    private fun uploadImageToStorage(hotelName: String, roomName: String, roomPrice: String, bedCount: String, wifiAvailable: Boolean, bathroomCount: String) {
+    private fun uploadImageToStorage(hotelId: String, roomName: String, roomPrice: String, bedCount: String, wifiAvailable: Boolean, bathroomCount: String) {
         selectedImageUri?.let { uri ->
-            val imageRef = storageRef.child("${hotelName}_${roomName}_${System.currentTimeMillis()}")
+            val imageRef = storageRef.child("${hotelId}_${roomName}_${System.currentTimeMillis()}")
 
             imageRef.putFile(uri)
                 .addOnSuccessListener { taskSnapshot ->
                     taskSnapshot.storage.downloadUrl.addOnSuccessListener { uri ->
                         val room = Room(roomName, uri.toString(), roomPrice, bedCount, wifiAvailable, bathroomCount)
 
-                        firestore.collection("hotels").whereEqualTo("name", hotelName).get().addOnSuccessListener { documents ->
-                            if (documents.documents.isNotEmpty()) {
-                                val hotelId = documents.documents[0].id
-                                firestore.collection("hotels").document(hotelId).collection("rooms").add(room)
-                                    .addOnSuccessListener {
-                                        Toast.makeText(this, "Room Added Successfully!", Toast.LENGTH_SHORT).show()
-                                        finish()
-                                    }
-                                    .addOnFailureListener { e ->
-                                        Toast.makeText(this, "Failed to Add Room! ${e.message}", Toast.LENGTH_SHORT).show()
-                                    }
+                        database.reference.child("hotels").child(hotelId).child("rooms").push().setValue(room)
+                            .addOnSuccessListener {
+                                Toast.makeText(this, "Room Added Successfully!", Toast.LENGTH_SHORT).show()
+                                finish()
                             }
-                        }
+                            .addOnFailureListener { e ->
+                                Toast.makeText(this, "Failed to Add Room! ${e.message}", Toast.LENGTH_SHORT).show()
+                            }
                     }
                 }
                 .addOnFailureListener { e ->

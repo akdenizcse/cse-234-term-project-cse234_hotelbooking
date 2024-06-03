@@ -29,4 +29,7 @@
     <string name="postalcode">PostalCode:</string>
     <string name="_9871234567">9871234567</string>
     <string name="search_results">Search Results</string>
+    <string name="search_results_content">This section contains search results for hotels.</string>
+    <string name="hotel_list">List of hotels with their images, names, and locations.</string>
+    <string name="navigation">Bottom navigation menu</string>
 </resources>
