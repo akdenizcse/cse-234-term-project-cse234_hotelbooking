@@ -53,17 +53,18 @@ class SearchResults : AppCompatActivity() {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val hotelsList = mutableListOf<Hotel>()
                 for (hotelSnapshot in snapshot.children) {
+                    val hotelId = hotelSnapshot.key ?: ""
                     val hotelName = hotelSnapshot.child("name").getValue(String::class.java)
                     val hotelLocation = hotelSnapshot.child("location").getValue(String::class.java)
                     val hotelImageUrl = hotelSnapshot.child("imageUrl").getValue(String::class.java)
 
                     if (hotelName != null && hotelLocation != null && hotelImageUrl != null) {
-                        hotelsList.add(Hotel(hotelName, hotelLocation, hotelImageUrl))
+                        hotelsList.add(Hotel(hotelId, hotelName, hotelLocation, hotelImageUrl))
                     }
                 }
                 hotelsList.reverse()
                 hotelsList.forEach {
-                    addHotelToLayout(it.name, it.location, it.imageUrl)
+                    addHotelToLayout(it)
                 }
             }
 
@@ -73,10 +74,15 @@ class SearchResults : AppCompatActivity() {
         })
     }
 
-    private fun addHotelToLayout(name: String, location: String, imageUrl: String) {
+    private fun addHotelToLayout(hotel: Hotel) {
         val hotelLayout = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            contentDescription = "Hotel named $name located at $location"
+            contentDescription = "Hotel named ${hotel.name} located at ${hotel.location}"
+            setOnClickListener {
+                val intent = Intent(this@SearchResults, HotelPage::class.java)
+                intent.putExtra("hotelId", hotel.id)
+                startActivity(intent)
+            }
         }
 
         val imageView = ImageView(this).apply {
@@ -84,18 +90,18 @@ class SearchResults : AppCompatActivity() {
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 500
             )
-            Glide.with(this@SearchResults).load(imageUrl).into(this)
-            contentDescription = "Image of $name"
+            Glide.with(this@SearchResults).load(hotel.imageUrl).into(this)
+            contentDescription = "Image of ${hotel.name}"
         }
 
         val nameView = TextView(this).apply {
-            text = name
+            text = hotel.name
             textSize = 24f
             setPadding(16, 16, 16, 16)
         }
 
         val locationView = TextView(this).apply {
-            text = location
+            text = hotel.location
             textSize = 18f
             setPadding(16, 16, 16, 16)
         }
@@ -108,6 +114,7 @@ class SearchResults : AppCompatActivity() {
     }
 
     data class Hotel(
+        val id: String = "",
         val name: String = "",
         val location: String = "",
         val imageUrl: String = ""
