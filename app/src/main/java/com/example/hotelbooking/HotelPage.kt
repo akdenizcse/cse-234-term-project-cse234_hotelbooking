@@ -1,6 +1,7 @@
 package com.example.hotelbooking
 
 import android.app.AlertDialog
+import android.content.Intent
 import android.os.Bundle
 import android.widget.ArrayAdapter
 import android.widget.ListView
@@ -30,6 +31,11 @@ class HotelPage : AppCompatActivity() {
 
         binding.roomListButton.setOnClickListener {
             showRoomsDialog()
+        }
+
+        binding.bookingNowButton.setOnClickListener {
+            val intent = Intent(this, PaymentActivity::class.java)
+            startActivity(intent)
         }
 
         loadHotelData()
