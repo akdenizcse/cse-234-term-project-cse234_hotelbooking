@@ -1,13 +1,9 @@
 package com.example.hotelbooking
 
 import android.app.AlertDialog
-import android.graphics.Typeface
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.widget.ArrayAdapter
-import android.widget.ImageView
 import android.widget.ListView
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.example.hotelbooking.databinding.ActivityHotelPageBinding
