@@ -1,3 +1,4 @@
+// SearchResults.kt
 package com.example.hotelbooking
 
 import android.content.Intent
@@ -14,6 +15,7 @@ import com.google.firebase.database.*
 class SearchResults : AppCompatActivity() {
     private lateinit var binding: ActivitySearchResultsBinding
     private lateinit var database: FirebaseDatabase
+    private var searchQuery: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -21,6 +23,7 @@ class SearchResults : AppCompatActivity() {
         setContentView(binding.root)
 
         database = FirebaseDatabase.getInstance()
+        searchQuery = intent.getStringExtra("searchQuery")?.trim()?.toLowerCase()
 
         binding.backButton.setOnClickListener {
             finish()
@@ -59,7 +62,9 @@ class SearchResults : AppCompatActivity() {
                     val hotelImageUrl = hotelSnapshot.child("imageUrl").getValue(String::class.java)
 
                     if (hotelName != null && hotelLocation != null && hotelImageUrl != null) {
-                        hotelsList.add(Hotel(hotelId, hotelName, hotelLocation, hotelImageUrl))
+                        if (searchQuery == null || hotelLocation.toLowerCase().contains(searchQuery!!)) {
+                            hotelsList.add(Hotel(hotelId, hotelName, hotelLocation, hotelImageUrl))
+                        }
                     }
                 }
                 hotelsList.reverse()

@@ -1,3 +1,4 @@
+// Dashboard.kt
 package com.example.hotelbooking
 
 import android.content.Intent
@@ -37,23 +38,10 @@ class Dashboard : AppCompatActivity() {
         }
 
         binding.searchButton.setOnClickListener {
-            val intent = Intent(this, SearchResults::class.java)
-            startActivity(intent)
-        }
-        binding.seeAllText.setOnClickListener {
-            val intent = Intent(this, SearchResults::class.java)
-            startActivity(intent)
-        }
-        binding.hotel1.setOnClickListener {
-            val intent = Intent(this, HotelPage::class.java)
-            startActivity(intent)
-        }
-        binding.hotel2.setOnClickListener {
-            val intent = Intent(this, HotelPage::class.java)
-            startActivity(intent)
-        }
-        binding.hotel3.setOnClickListener {
-            val intent = Intent(this, HotelPage::class.java)
+            val city = binding.city.text.toString()
+            val intent = Intent(this, SearchResults::class.java).apply {
+                putExtra("searchQuery", city)
+            }
             startActivity(intent)
         }
     }
