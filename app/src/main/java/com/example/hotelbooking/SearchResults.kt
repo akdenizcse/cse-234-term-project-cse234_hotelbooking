@@ -80,7 +80,7 @@ class SearchResults : AppCompatActivity() {
             contentDescription = "Hotel named ${hotel.name} located at ${hotel.location}"
             setOnClickListener {
                 val intent = Intent(this@SearchResults, HotelPage::class.java)
-                intent.putExtra("hotelId", hotel.id)
+                intent.putExtra("hotelId", hotel.id) // Otel ID'sini intent'e ekle
                 startActivity(intent)
             }
         }

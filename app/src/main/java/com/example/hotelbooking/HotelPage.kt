@@ -34,8 +34,7 @@ class HotelPage : AppCompatActivity() {
         }
 
         binding.bookingNowButton.setOnClickListener {
-            val intent = Intent(this, PaymentActivity::class.java)
-            startActivity(intent)
+            showRoomsDialog()
         }
 
         loadHotelData()
@@ -80,6 +79,8 @@ class HotelPage : AppCompatActivity() {
 
     private fun showRoomsDialog() {
         val sortedRooms = rooms.sortedBy { it.child("price").getValue(Double::class.java) ?: 0.0 }
+        val roomIds = sortedRooms.map { it.key } // Odaların ID'lerini al
+
         val roomNamesAndPrices = sortedRooms.map {
             val roomName = it.child("name").getValue(String::class.java) ?: "Unknown"
             val price = it.child("price").getValue(Double::class.java) ?: 0.0
@@ -94,8 +95,15 @@ class HotelPage : AppCompatActivity() {
         listView.adapter = adapter
 
         listView.setOnItemClickListener { _, _, position, _ ->
+            val selectedRoomId = roomIds[position] // Seçilen oda ID'sini al
             showRoom(sortedRooms[position])
-            roomListDialog?.dismiss() // Dismiss the dialog
+            roomListDialog?.dismiss() // Diyalog penceresini kapat
+
+            // Rezervasyon oluşturulacak Intent'e oda ID'sini ekle
+            val intent = Intent(this, PaymentActivity::class.java)
+            intent.putExtra("hotelId", hotelId)
+            intent.putExtra("roomId", selectedRoomId)
+            startActivity(intent)
         }
 
         builder.setView(listView)
