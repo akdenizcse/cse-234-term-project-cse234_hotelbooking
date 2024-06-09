@@ -1,15 +1,11 @@
-<?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/commentActivity"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:id="@+id/commentActivity"
     android:background="@drawable/background"
     tools:context=".CommentActivity">
-
 
     <ImageView
         android:id="@+id/backButton"
@@ -23,7 +19,6 @@
         android:padding="8dp"
         android:src="@drawable/arrow_50" />
 
-
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -33,7 +28,6 @@
         app:cardCornerRadius="30dp"
         app:cardElevation="20dp"
         android:layout_below="@id/backButton">
-
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -74,8 +68,6 @@
                 android:numStars="5"
                 android:rating="2.5"/>
 
-
-
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
@@ -86,10 +78,9 @@
                 android:backgroundTint="#09104C"
                 app:cornerRadius = "20dp"/>
 
-
         </LinearLayout>
-
     </androidx.cardview.widget.CardView>
+
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigationView"
         android:layout_width="match_parent"
@@ -97,6 +88,5 @@
         android:background="@color/white"
         android:layout_alignParentBottom= "true"
         app:menu="@menu/bottom_nav_menu"/>
-
 
 </RelativeLayout>

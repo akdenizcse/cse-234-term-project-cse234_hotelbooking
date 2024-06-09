@@ -83,7 +83,7 @@ class MyTripsActivity : AppCompatActivity() {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val hotelName = snapshot.child("name").getValue(String::class.java) ?: ""
                 val roomName = snapshot.child("rooms").child(roomId).child("name").getValue(String::class.java) ?: ""
-                val bookingDates = "Some date range" // Burada gerçek booking tarihlerini almalısınız
+                val bookingDates = "Some date range" // Gerçek booking tarihlerini buradan alabilirsiniz
 
                 val bookingView = LayoutInflater.from(this@MyTripsActivity).inflate(R.layout.booking_item, null)
                 bookingView.findViewById<TextView>(R.id.hotelNameTextView).text = hotelName
@@ -94,32 +94,33 @@ class MyTripsActivity : AppCompatActivity() {
                 val cancelButton = bookingView.findViewById<Button>(R.id.cancelBookingButton)
                 val rateButton = bookingView.findViewById<Button>(R.id.rateAndCommentButton)
 
-                // Change status button click listener
+                // Durum düğmesinin tıklama dinleyicisi
                 statusButton.setOnClickListener {
                     changeBookingStatus(bookingId, isActive, cancelButton, rateButton, statusButton)
                 }
 
-                // Cancel booking button click listener
+                // Rezervasyonu iptal etme düğmesinin tıklama dinleyicisi
                 cancelButton.setOnClickListener {
                     cancelBooking(bookingId, bookingView)
                 }
 
-                // Rate and comment button click listener
+                // Otele puan ve yorum ekleme düğmesinin tıklama dinleyicisi
                 rateButton.setOnClickListener {
                     val intent = Intent(this@MyTripsActivity, CommentActivity::class.java)
+                    intent.putExtra("hotelId", hotelId)
                     startActivity(intent)
                 }
 
-                // Set initial button visibility and colors
+                // Başlangıçta düğme görünürlüğünü ve renklerini ayarla
                 if (isActive) {
                     cancelButton.visibility = View.VISIBLE
                     cancelButton.setBackgroundColor(ContextCompat.getColor(this@MyTripsActivity, android.R.color.holo_red_dark))
-                    statusButton.text = "Change Status"
+                    statusButton.text = "Durumu Değiştir"
                     statusButton.setBackgroundColor(ContextCompat.getColor(this@MyTripsActivity, android.R.color.holo_red_dark))
                 } else {
                     rateButton.visibility = View.VISIBLE
                     rateButton.setBackgroundColor(ContextCompat.getColor(this@MyTripsActivity, android.R.color.holo_blue_dark))
-                    statusButton.text = "Change Status"
+                    statusButton.text = "Durumu Değiştir"
                     statusButton.setBackgroundColor(ContextCompat.getColor(this@MyTripsActivity, android.R.color.black))
                 }
 
@@ -156,7 +157,7 @@ class MyTripsActivity : AppCompatActivity() {
                     rateButton.visibility = View.VISIBLE
                     rateButton.setBackgroundColor(ContextCompat.getColor(this@MyTripsActivity, android.R.color.holo_blue_dark))
                 }
-                statusButton.text = "Change Status"
+                statusButton.text = "Durumu Değiştir"
                 statusButton.setBackgroundColor(ContextCompat.getColor(this@MyTripsActivity, android.R.color.black))
             } else {
                 // Handle error

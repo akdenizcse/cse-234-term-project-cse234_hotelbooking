@@ -1,10 +1,12 @@
 package com.example.hotelbooking
 
-import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.ListView
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.example.hotelbooking.databinding.ActivityHotelPageBinding
@@ -38,6 +40,8 @@ class HotelPage : AppCompatActivity() {
         }
 
         loadHotelData()
+        loadComments()
+        loadAverageRating()
     }
 
     private fun loadHotelData() {
@@ -109,5 +113,75 @@ class HotelPage : AppCompatActivity() {
         builder.setView(listView)
         roomListDialog = builder.create()
         roomListDialog?.show()
+    }
+
+    private fun loadComments() {
+        val commentsRef = database.reference.child("comments").orderByChild("hotelId").equalTo(hotelId)
+
+        commentsRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val comments = mutableListOf<String>()
+
+                // Her bir yorumu işle
+                snapshot.children.forEach { commentSnapshot ->
+                    val commentText = commentSnapshot.child("commentText").getValue(String::class.java) ?: ""
+                    val rating = commentSnapshot.child("rating").getValue(Double::class.java) ?: 0.0
+                    val userId = commentSnapshot.child("userId").getValue(String::class.java) ?: "Anonymous"
+
+                    // Kullanıcı adını al
+                    val userRef = database.reference.child("users").child(userId)
+                    userRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                        override fun onDataChange(userSnapshot: DataSnapshot) {
+                            val userName = userSnapshot.child("name").getValue(String::class.java) ?: "Anonymous"
+                            val formattedComment = "$userName - $commentText - Rating: $rating"
+                            comments.add(formattedComment)
+
+                            // Tüm yorumlar işlendikten sonra ListView'a set et
+                            if (comments.size == snapshot.childrenCount.toInt()) {
+                                val adapter = ArrayAdapter(this@HotelPage, android.R.layout.simple_list_item_1, comments)
+                                binding.commentsListView.adapter = adapter
+                            }
+                        }
+
+                        override fun onCancelled(error: DatabaseError) {
+                            // Handle error
+                        }
+                    })
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Handle error
+            }
+        })
+    }
+
+
+    private fun loadAverageRating() {
+        val commentsRef = database.reference.child("comments").orderByChild("hotelId").equalTo(hotelId)
+
+        commentsRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                var totalRating = 0.0
+                var ratingCount = 0
+
+                for (commentSnapshot in snapshot.children) {
+                    val rating = commentSnapshot.child("rating").getValue(Double::class.java) ?: 0.0
+                    totalRating += rating
+                    ratingCount++
+                }
+
+                if (ratingCount > 0) {
+                    val averageRating = totalRating / ratingCount
+                    binding.averageRatingTextView.text = "Average Rating: %.1f".format(averageRating)
+                } else {
+                    binding.averageRatingTextView.text = "Average Rating: N/A"
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Handle error
+            }
+        })
     }
 }
