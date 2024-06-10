@@ -66,8 +66,10 @@ class MyTripsActivity : AppCompatActivity() {
                     val isActive = bookingSnapshot.child("active").getValue(Boolean::class.java) ?: false
                     val hotelId = bookingSnapshot.child("hotelId").getValue(String::class.java) ?: ""
                     val roomId = bookingSnapshot.child("roomId").getValue(String::class.java) ?: ""
+                    val departDate = bookingSnapshot.child("departDate").getValue(String::class.java) ?: ""
+                    val returnDate = bookingSnapshot.child("returnDate").getValue(String::class.java) ?: ""
 
-                    addBookingToLayout(bookingSnapshot.key ?: "", hotelId, roomId, isActive)
+                    addBookingToLayout(bookingSnapshot.key ?: "", hotelId, roomId, isActive, departDate, returnDate)
                 }
             }
 
@@ -77,13 +79,13 @@ class MyTripsActivity : AppCompatActivity() {
         })
     }
 
-    private fun addBookingToLayout(bookingId: String, hotelId: String, roomId: String, isActive: Boolean) {
+    private fun addBookingToLayout(bookingId: String, hotelId: String, roomId: String, isActive: Boolean, departDate: String, returnDate: String) {
         val hotelRef = database.reference.child("hotels").child(hotelId)
         hotelRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val hotelName = snapshot.child("name").getValue(String::class.java) ?: ""
                 val roomName = snapshot.child("rooms").child(roomId).child("name").getValue(String::class.java) ?: ""
-                val bookingDates = "Some date range" // Gerçek booking tarihlerini buradan alabilirsiniz
+                val bookingDates = "$departDate - $returnDate"
 
                 val bookingView = LayoutInflater.from(this@MyTripsActivity).inflate(R.layout.booking_item, null)
                 bookingView.findViewById<TextView>(R.id.hotelNameTextView).text = hotelName
