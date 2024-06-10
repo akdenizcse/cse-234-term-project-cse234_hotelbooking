@@ -52,6 +52,7 @@ class HotelPage : AppCompatActivity() {
 
     private fun loadHotelData() {
         val hotelRef = database.reference.child("hotels").child(hotelId)
+        val bookingsRef = database.reference.child("bookings").orderByChild("hotelId").equalTo(hotelId)
 
         hotelRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -62,9 +63,23 @@ class HotelPage : AppCompatActivity() {
                 Glide.with(this@HotelPage).load(hotelImageUrl).into(binding.picDetail)
 
                 rooms = snapshot.child("rooms").children.toList()
-                if (rooms.isNotEmpty()) {
-                    showRoom(rooms[0])
-                }
+
+                // Tüm booking yapılmış odaların ID'lerini alıyoruz
+                bookingsRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(bookingsSnapshot: DataSnapshot) {
+                        val bookedRoomIds = bookingsSnapshot.children.map { it.child("roomId").getValue(String::class.java) }
+
+                        // Booking yapılmamış odaları filtrele
+                        val availableRooms = rooms.filter { it.key !in bookedRoomIds }
+                        if (availableRooms.isNotEmpty()) {
+                            showRoom(availableRooms[0])
+                        }
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                        // Handle error
+                    }
+                })
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -109,16 +124,19 @@ class HotelPage : AppCompatActivity() {
             showRoom(sortedRooms[position])
             roomListDialog?.dismiss() // Diyalog penceresini kapat
 
-            // Rezervasyon oluşturulacak Intent'e oda ID'sini ekle
-            val intent = Intent(this, PaymentActivity::class.java)
-            intent.putExtra("hotelId", hotelId)
-            intent.putExtra("roomId", selectedRoomId)
+            // Booking Now butonunun tıklama dinleyicisini güncelle
+            binding.bookingNowButton.setOnClickListener {
+                // Rezervasyon oluşturulacak Intent'e oda ID'sini ekle
+                val intent = Intent(this, PaymentActivity::class.java)
+                intent.putExtra("hotelId", hotelId)
+                intent.putExtra("roomId", selectedRoomId)
 
-            // Tarihleri intent'e ekliyoruz
-            intent.putExtra("departDate", departDate)
-            intent.putExtra("returnDate", returnDate)
+                // Tarihleri intent'e ekliyoruz
+                intent.putExtra("departDate", departDate)
+                intent.putExtra("returnDate", returnDate)
 
-            startActivity(intent)
+                startActivity(intent)
+            }
         }
 
         builder.setView(listView)
@@ -126,10 +144,12 @@ class HotelPage : AppCompatActivity() {
         roomListDialog?.show()
     }
 
+
+
     private fun loadComments() {
         val commentsRef = database.reference.child("comments").orderByChild("hotelId").equalTo(hotelId)
 
-        commentsRef.addListenerForSingleValueEvent(object : ValueEventListener {
+        commentsRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val comments = mutableListOf<String>()
 
@@ -144,14 +164,12 @@ class HotelPage : AppCompatActivity() {
                     userRef.addListenerForSingleValueEvent(object : ValueEventListener {
                         override fun onDataChange(userSnapshot: DataSnapshot) {
                             val userName = userSnapshot.child("name").getValue(String::class.java) ?: "Anonymous"
-                            val formattedComment = "$userName - $commentText - Rating: $rating"
+                            val formattedComment = "$userName - Rating: $rating\n$commentText"
                             comments.add(formattedComment)
 
                             // Tüm yorumlar işlendikten sonra ListView'a set et
-                            if (comments.size == snapshot.childrenCount.toInt()) {
-                                val adapter = ArrayAdapter(this@HotelPage, android.R.layout.simple_list_item_1, comments)
-                                binding.commentsListView.adapter = adapter
-                            }
+                            val adapter = ArrayAdapter(this@HotelPage, android.R.layout.simple_list_item_1, comments)
+                            binding.commentsListView.adapter = adapter
                         }
 
                         override fun onCancelled(error: DatabaseError) {
@@ -167,10 +185,12 @@ class HotelPage : AppCompatActivity() {
         })
     }
 
+
+
     private fun loadAverageRating() {
         val commentsRef = database.reference.child("comments").orderByChild("hotelId").equalTo(hotelId)
 
-        commentsRef.addListenerForSingleValueEvent(object : ValueEventListener {
+        commentsRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 var totalRating = 0.0
                 var ratingCount = 0
@@ -194,4 +214,5 @@ class HotelPage : AppCompatActivity() {
             }
         })
     }
+
 }

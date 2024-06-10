@@ -32,4 +32,7 @@
     <string name="search_results_content">This section contains search results for hotels.</string>
     <string name="hotel_list">List of hotels with their images, names, and locations.</string>
     <string name="navigation">Bottom navigation menu</string>
+    <string name="room_list">Room List</string>
+    <string name="booking_now">Booking Now</string>
+    <string name="comments">Comments</string>
 </resources>
