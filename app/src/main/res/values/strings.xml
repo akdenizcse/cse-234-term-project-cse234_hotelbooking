@@ -35,4 +35,6 @@
     <string name="room_list">Room List</string>
     <string name="booking_now">Booking Now</string>
     <string name="comments">Comments</string>
+    <string name="profile_image" />
+    <string name="name_hint" />
 </resources>
