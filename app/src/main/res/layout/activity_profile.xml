@@ -57,11 +57,14 @@
 
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/profileImageView"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:background="@color/white"
-        android:src="@drawable/default_profile_image"
-        app:shapeAppearanceOverlay="@style/styleRoundedCornersImage"/>
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:src="@drawable/default_profile_image"
+        app:shapeAppearanceOverlay="@style/styleRoundedCornersImage"
+        app:strokeColor="@android:color/transparent"
+        app:strokeWidth="0dp"
+        android:scaleType="centerCrop"
+        />
 
         <TextView
             android:id="@+id/nameTv"
