@@ -1,13 +1,13 @@
 package com.example.hotelbooking
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.example.hotelbooking.databinding.ActivityPaymentBinding
-import com.google.firebase.database.*
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.database.FirebaseDatabase
 
 class PaymentActivity : AppCompatActivity() {
     private lateinit var binding: ActivityPaymentBinding
@@ -16,6 +16,8 @@ class PaymentActivity : AppCompatActivity() {
     private lateinit var currentUser: FirebaseUser
     private lateinit var hotelId: String
     private lateinit var roomId: String
+    private var departDate: String? = null
+    private var returnDate: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,13 +33,13 @@ class PaymentActivity : AppCompatActivity() {
         }
 
         binding.payButton.setOnClickListener {
-            // Rezervasyonu kaydet
             saveBookingToDatabase()
         }
 
-        // Kullanıcının seçtiği otel ve oda bilgilerini al
         hotelId = intent.getStringExtra("hotelId") ?: ""
         roomId = intent.getStringExtra("roomId") ?: ""
+        departDate = intent.getStringExtra("departDate")
+        returnDate = intent.getStringExtra("returnDate")
     }
 
     private fun saveBookingToDatabase() {
@@ -45,11 +47,14 @@ class PaymentActivity : AppCompatActivity() {
         val bookingsRef = database.reference.child("bookings")
         val bookingId = bookingsRef.push().key ?: ""
 
-        val bookingData = HashMap<String, Any>()
-        bookingData["userId"] = userId
-        bookingData["hotelId"] = hotelId // Doğru otel ID'sini al
-        bookingData["roomId"] = roomId // Doğru oda ID'sini al
-        bookingData["active"] = true // Varsayılan olarak rezervasyon aktif
+        val bookingData = hashMapOf(
+            "userId" to userId,
+            "hotelId" to hotelId,
+            "roomId" to roomId,
+            "departDate" to (departDate ?: ""),
+            "returnDate" to (returnDate ?: ""),
+            "active" to true
+        )
 
         bookingsRef.child(bookingId).setValue(bookingData)
             .addOnSuccessListener {

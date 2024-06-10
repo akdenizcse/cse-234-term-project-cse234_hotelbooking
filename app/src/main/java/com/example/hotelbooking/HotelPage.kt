@@ -2,8 +2,6 @@ package com.example.hotelbooking
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.ListView
 import androidx.appcompat.app.AlertDialog
@@ -19,6 +17,10 @@ class HotelPage : AppCompatActivity() {
     private var rooms: List<DataSnapshot> = listOf()
     private var roomListDialog: AlertDialog? = null
 
+    // Tarih değişkenleri
+    private lateinit var departDate: String
+    private lateinit var returnDate: String
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityHotelPageBinding.inflate(layoutInflater)
@@ -26,6 +28,10 @@ class HotelPage : AppCompatActivity() {
 
         database = FirebaseDatabase.getInstance()
         hotelId = intent.getStringExtra("hotelId") ?: ""
+
+        // Tarihleri intent'ten alıyoruz
+        departDate = intent.getStringExtra("departDate") ?: ""
+        returnDate = intent.getStringExtra("returnDate") ?: ""
 
         binding.backButton.setOnClickListener {
             finish()
@@ -107,6 +113,11 @@ class HotelPage : AppCompatActivity() {
             val intent = Intent(this, PaymentActivity::class.java)
             intent.putExtra("hotelId", hotelId)
             intent.putExtra("roomId", selectedRoomId)
+
+            // Tarihleri intent'e ekliyoruz
+            intent.putExtra("departDate", departDate)
+            intent.putExtra("returnDate", returnDate)
+
             startActivity(intent)
         }
 
@@ -155,7 +166,6 @@ class HotelPage : AppCompatActivity() {
             }
         })
     }
-
 
     private fun loadAverageRating() {
         val commentsRef = database.reference.child("comments").orderByChild("hotelId").equalTo(hotelId)

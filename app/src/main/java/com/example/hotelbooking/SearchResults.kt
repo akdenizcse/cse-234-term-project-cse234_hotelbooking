@@ -1,4 +1,3 @@
-// SearchResults.kt
 package com.example.hotelbooking
 
 import android.content.Intent
@@ -16,6 +15,8 @@ class SearchResults : AppCompatActivity() {
     private lateinit var binding: ActivitySearchResultsBinding
     private lateinit var database: FirebaseDatabase
     private var searchQuery: String? = null
+    private var departDate: String? = null
+    private var returnDate: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,6 +25,8 @@ class SearchResults : AppCompatActivity() {
 
         database = FirebaseDatabase.getInstance()
         searchQuery = intent.getStringExtra("searchQuery")?.trim()?.toLowerCase()
+        departDate = intent.getStringExtra("departDate")
+        returnDate = intent.getStringExtra("returnDate")
 
         binding.backButton.setOnClickListener {
             finish()
@@ -85,7 +88,9 @@ class SearchResults : AppCompatActivity() {
             contentDescription = "Hotel named ${hotel.name} located at ${hotel.location}"
             setOnClickListener {
                 val intent = Intent(this@SearchResults, HotelPage::class.java)
-                intent.putExtra("hotelId", hotel.id) // Otel ID'sini intent'e ekle
+                intent.putExtra("hotelId", hotel.id)
+                intent.putExtra("departDate", departDate)
+                intent.putExtra("returnDate", returnDate)
                 startActivity(intent)
             }
         }
