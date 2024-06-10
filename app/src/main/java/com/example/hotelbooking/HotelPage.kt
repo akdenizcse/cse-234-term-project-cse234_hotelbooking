@@ -9,6 +9,9 @@ import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.example.hotelbooking.databinding.ActivityHotelPageBinding
 import com.google.firebase.database.*
+import java.text.ParseException
+import java.text.SimpleDateFormat
+import java.util.*
 
 class HotelPage : AppCompatActivity() {
     private lateinit var binding: ActivityHotelPageBinding
@@ -16,8 +19,6 @@ class HotelPage : AppCompatActivity() {
     private lateinit var hotelId: String
     private var rooms: List<DataSnapshot> = listOf()
     private var roomListDialog: AlertDialog? = null
-
-    // Tarih değişkenleri
     private lateinit var departDate: String
     private lateinit var returnDate: String
 
@@ -28,8 +29,6 @@ class HotelPage : AppCompatActivity() {
 
         database = FirebaseDatabase.getInstance()
         hotelId = intent.getStringExtra("hotelId") ?: ""
-
-        // Tarihleri intent'ten alıyoruz
         departDate = intent.getStringExtra("departDate") ?: ""
         returnDate = intent.getStringExtra("returnDate") ?: ""
 
@@ -48,6 +47,52 @@ class HotelPage : AppCompatActivity() {
         loadHotelData()
         loadComments()
         loadAverageRating()
+
+        // departDate ve returnDate boş değilse, onları tarih formatına dönüştür
+        if (departDate.isNotEmpty() && returnDate.isNotEmpty()) {
+            try {
+                val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+                sdf.parse(departDate)
+                sdf.parse(returnDate)
+            } catch (e: ParseException) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+
+    private fun isFullyBooked(departDate: String, returnDate: String, callback: (Boolean) -> Unit) {
+        // Tüm booking yapılmış odaların ID'lerini alıyoruz
+        val bookingsRef = database.reference.child("bookings").orderByChild("hotelId").equalTo(hotelId)
+
+        // Rezervasyonların tarihlerini kontrol etmek için geçerli departman ve dönüş tarihlerini alıyoruz
+        val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        val depart = sdf.parse(departDate) ?: return
+        val returnD = sdf.parse(returnDate) ?: return
+
+        bookingsRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(bookingsSnapshot: DataSnapshot) {
+                bookingsSnapshot.children.forEach { bookingSnapshot ->
+                    val bookingRoomId = bookingSnapshot.child("roomId").getValue(String::class.java)
+                    val bookingDepartDate = bookingSnapshot.child("departDate").getValue(String::class.java)
+                    val bookingReturnDate = bookingSnapshot.child("returnDate").getValue(String::class.java)
+
+                    if (bookingRoomId != null && bookingDepartDate != null && bookingReturnDate != null) {
+                        // Kontrol edilen tarih aralığında ve aynı oda için booking varsa, oda tamamen doludur
+                        if (isOverlap(depart, returnD, sdf.parse(bookingDepartDate)!!, sdf.parse(bookingReturnDate)!!)) {
+                            callback(true)
+                            return
+                        }
+                    }
+                }
+                callback(false)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Handle error
+                callback(false)
+            }
+        })
     }
 
     private fun loadHotelData() {
@@ -67,10 +112,35 @@ class HotelPage : AppCompatActivity() {
                 // Tüm booking yapılmış odaların ID'lerini alıyoruz
                 bookingsRef.addListenerForSingleValueEvent(object : ValueEventListener {
                     override fun onDataChange(bookingsSnapshot: DataSnapshot) {
-                        val bookedRoomIds = bookingsSnapshot.children.map { it.child("roomId").getValue(String::class.java) }
+                        val fullyBookedRoomIds = mutableListOf<String>()
 
-                        // Booking yapılmamış odaları filtrele
-                        val availableRooms = rooms.filter { it.key !in bookedRoomIds }
+                        bookingsSnapshot.children.forEach { bookingSnapshot ->
+                            val bookingRoomId =
+                                bookingSnapshot.child("roomId").getValue(String::class.java)
+                            val bookingDepartDate =
+                                bookingSnapshot.child("departDate").getValue(String::class.java)
+                            val bookingReturnDate =
+                                bookingSnapshot.child("returnDate").getValue(String::class.java)
+
+                            // Tüm rezervasyonlar üzerinde kontrol yap
+                            if (bookingRoomId != null && bookingDepartDate != null && bookingReturnDate != null) {
+                                isFullyBooked(bookingDepartDate, bookingReturnDate) { fullyBooked ->
+                                    if (fullyBooked) {
+                                        val roomId = bookingSnapshot.child("roomId").getValue(String::class.java)
+                                        if (roomId != null) {
+                                            fullyBookedRoomIds.add(roomId)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        // Booking yapılmamış ve dolu olmayan odaları bul
+                        val availableRooms = rooms.filter { room ->
+                            val roomId = room.key
+                            roomId != null && roomId !in fullyBookedRoomIds
+                        }
+
                         if (availableRooms.isNotEmpty()) {
                             showRoom(availableRooms[0])
                         }
@@ -88,17 +158,27 @@ class HotelPage : AppCompatActivity() {
         })
     }
 
+
+    private fun isOverlap(start1: Date, end1: Date, start2: Date, end2: Date): Boolean {
+        return start1.before(end2) && start2.before(end1)
+    }
+
+
+
+
     private fun showRoom(roomSnapshot: DataSnapshot) {
         val roomName = roomSnapshot.child("name").getValue(String::class.java) ?: ""
         val bathroomCount = roomSnapshot.child("bathroomCount").getValue(Int::class.java) ?: 0
         val bedCount = roomSnapshot.child("bedCount").getValue(Int::class.java) ?: 0
-        val wifiAvailable = roomSnapshot.child("wifiAvailable").getValue(Boolean::class.java) ?: false
+        val wifiAvailable =
+            roomSnapshot.child("wifiAvailable").getValue(Boolean::class.java) ?: false
         val price = roomSnapshot.child("price").getValue(Double::class.java) ?: 0.0
 
         binding.roomNameTextView.text = roomName
         binding.bathroomCountTextView.text = "Bathroom Count: $bathroomCount"
         binding.bedCountTextView.text = "Bed Count: $bedCount"
-        binding.wifiAvailabilityTextView.text = "WiFi Available: ${if (wifiAvailable) "Yes" else "No"}"
+        binding.wifiAvailabilityTextView.text =
+            "WiFi Available: ${if (wifiAvailable) "Yes" else "No"}"
         binding.priceTextView.text = "Price: $$price"
     }
 
@@ -126,17 +206,29 @@ class HotelPage : AppCompatActivity() {
 
             // Booking Now butonunun tıklama dinleyicisini güncelle
             binding.bookingNowButton.setOnClickListener {
-                // Rezervasyon oluşturulacak Intent'e oda ID'sini ekle
-                val intent = Intent(this, PaymentActivity::class.java)
-                intent.putExtra("hotelId", hotelId)
-                intent.putExtra("roomId", selectedRoomId)
+                isFullyBooked(departDate, returnDate) { fullyBooked ->
+                    if (fullyBooked) {
+                        // Odanın dolu olduğuna dair bir uyarı mesajı göster
+                        AlertDialog.Builder(this)
+                            .setTitle("Room Fully Booked")
+                            .setMessage("The selected room is fully booked for the selected dates.")
+                            .setPositiveButton("OK", null)
+                            .show()
+                    } else {
+                        // Rezervasyon oluşturulacak Intent'e oda ID'sini ekle
+                        val intent = Intent(this, PaymentActivity::class.java)
+                        intent.putExtra("hotelId", hotelId)
+                        intent.putExtra("roomId", selectedRoomId)
 
-                // Tarihleri intent'e ekliyoruz
-                intent.putExtra("departDate", departDate)
-                intent.putExtra("returnDate", returnDate)
+                        // Tarihleri intent'e ekliyoruz
+                        intent.putExtra("departDate", departDate.toString())
+                        intent.putExtra("returnDate", returnDate.toString())
 
-                startActivity(intent)
+                        startActivity(intent)
+                    }
+                }
             }
+
         }
 
         builder.setView(listView)
@@ -144,31 +236,36 @@ class HotelPage : AppCompatActivity() {
         roomListDialog?.show()
     }
 
-
-
     private fun loadComments() {
-        val commentsRef = database.reference.child("comments").orderByChild("hotelId").equalTo(hotelId)
+        val commentsRef =
+            database.reference.child("comments").orderByChild("hotelId").equalTo(hotelId)
 
         commentsRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                val comments = mutableListOf<String>()
+                val comments =  mutableListOf<String>()
 
                 // Her bir yorumu işle
                 snapshot.children.forEach { commentSnapshot ->
-                    val commentText = commentSnapshot.child("commentText").getValue(String::class.java) ?: ""
+                    val commentText =
+                        commentSnapshot.child("commentText").getValue(String::class.java) ?: ""
                     val rating = commentSnapshot.child("rating").getValue(Double::class.java) ?: 0.0
-                    val userId = commentSnapshot.child("userId").getValue(String::class.java) ?: "Anonymous"
-
+                    val userId =
+                        commentSnapshot.child("userId").getValue(String::class.java) ?: "Anonymous"
                     // Kullanıcı adını al
                     val userRef = database.reference.child("users").child(userId)
                     userRef.addListenerForSingleValueEvent(object : ValueEventListener {
                         override fun onDataChange(userSnapshot: DataSnapshot) {
-                            val userName = userSnapshot.child("name").getValue(String::class.java) ?: "Anonymous"
+                            val userName = userSnapshot.child("name").getValue(String::class.java)
+                                ?: "Anonymous"
                             val formattedComment = "$userName - Rating: $rating\n$commentText"
                             comments.add(formattedComment)
 
                             // Tüm yorumlar işlendikten sonra ListView'a set et
-                            val adapter = ArrayAdapter(this@HotelPage, android.R.layout.simple_list_item_1, comments)
+                            val adapter = ArrayAdapter(
+                                this@HotelPage,
+                                android.R.layout.simple_list_item_1,
+                                comments
+                            )
                             binding.commentsListView.adapter = adapter
                         }
 
@@ -185,10 +282,9 @@ class HotelPage : AppCompatActivity() {
         })
     }
 
-
-
     private fun loadAverageRating() {
-        val commentsRef = database.reference.child("comments").orderByChild("hotelId").equalTo(hotelId)
+        val commentsRef =
+            database.reference.child("comments").orderByChild("hotelId").equalTo(hotelId)
 
         commentsRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -203,7 +299,8 @@ class HotelPage : AppCompatActivity() {
 
                 if (ratingCount > 0) {
                     val averageRating = totalRating / ratingCount
-                    binding.averageRatingTextView.text = "Average Rating: %.1f".format(averageRating)
+                    binding.averageRatingTextView.text =
+                        "Average Rating: %.1f".format(averageRating)
                 } else {
                     binding.averageRatingTextView.text = "Average Rating: N/A"
                 }
@@ -214,5 +311,5 @@ class HotelPage : AppCompatActivity() {
             }
         })
     }
-
 }
+
