@@ -2,6 +2,8 @@ package com.example.hotelbooking
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
+import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -84,7 +86,7 @@ class SearchResults : AppCompatActivity() {
 
     private fun addHotelToLayout(hotel: Hotel) {
         val hotelLayout = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
+            orientation = LinearLayout.HORIZONTAL
             contentDescription = "Hotel named ${hotel.name} located at ${hotel.location}"
             setOnClickListener {
                 val intent = Intent(this@SearchResults, HotelPage::class.java)
@@ -93,34 +95,110 @@ class SearchResults : AppCompatActivity() {
                 intent.putExtra("returnDate", returnDate)
                 startActivity(intent)
             }
+            setPadding(0, 20, 0, 20)
         }
 
         val imageView = ImageView(this).apply {
             layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                500
+                300, 300
             )
             Glide.with(this@SearchResults).load(hotel.imageUrl).into(this)
             contentDescription = "Image of ${hotel.name}"
         }
 
+        val infoLayout = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            layoutParams = LinearLayout.LayoutParams(
+                0,
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                1f
+            )
+        }
+
         val nameView = TextView(this).apply {
             text = hotel.name
-            textSize = 24f
-            setPadding(16, 16, 16, 16)
+            textSize = 20f
+            setPadding(16, 16, 16, 8)
         }
 
         val locationView = TextView(this).apply {
             text = hotel.location
-            textSize = 18f
-            setPadding(16, 16, 16, 16)
+            textSize = 16f
+            setPadding(16, 8, 16, 8)
         }
 
-        hotelLayout.addView(imageView)
-        hotelLayout.addView(nameView)
-        hotelLayout.addView(locationView)
+        val cheapestRoomPriceView = TextView(this).apply {
+            text = "Cheapest room: $0" // Başlangıçta fiyat bilgisi yoksa varsayılan değer
+            textSize = 16f
+            setPadding(16, 8, 16, 16)
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                setMargins(0, 0, 16, 16)
+                gravity = android.view.Gravity.END or android.view.Gravity.BOTTOM
+            }
+        }
 
-        binding.hotelListContainer.addView(hotelLayout, 0)
+        infoLayout.addView(nameView)
+        infoLayout.addView(locationView)
+        infoLayout.addView(cheapestRoomPriceView)
+
+        hotelLayout.addView(imageView)
+        hotelLayout.addView(infoLayout)
+
+        binding.hotelListContainer.addView(hotelLayout)
+
+        // Otelin en ucuz odasının fiyatını yükle
+        loadCheapestRoomPrice(hotel.id, cheapestRoomPriceView)
+
+        // Liste elemanları arasına gri ince bir çizgi ekle
+        val divider = View(this).apply {
+            layoutParams = LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                1
+            ).apply {
+                setMargins(0, 0, 0, 20)
+            }
+            setBackgroundColor(android.graphics.Color.GRAY)
+        }
+
+        binding.hotelListContainer.addView(divider)
+    }
+
+    private fun loadCheapestRoomPrice(hotelId: String, cheapestRoomPriceView: TextView) {
+        database.reference.child("hotels").child(hotelId).child("rooms")
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    var cheapestPrice = Long.MAX_VALUE // Başlangıçta maksimum bir değer alır
+                    for (roomSnapshot in snapshot.children) {
+                        try {
+                            val roomPriceLong = roomSnapshot.child("price").getValue(Long::class.java)
+                            roomPriceLong?.let {
+                                if (it < cheapestPrice) {
+                                    cheapestPrice = it
+                                }
+                            }
+                        } catch (e: Exception) {
+                            val roomPriceString = roomSnapshot.child("price").getValue(String::class.java)
+                            roomPriceString?.toLongOrNull()?.let {
+                                if (it < cheapestPrice) {
+                                    cheapestPrice = it
+                                }
+                            }
+                        }
+                    }
+                    if (cheapestPrice != Long.MAX_VALUE) {
+                        cheapestRoomPriceView.text = "${cheapestPrice.toDouble()}" // Long'u Double'a dönüştürerek göster
+                    } else {
+                        cheapestRoomPriceView.text = "" // Fiyat bulunamazsa "-" göster
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    // Handle error
+                }
+            })
     }
 
     data class Hotel(
