@@ -28,4 +28,14 @@
         android:textSize="18sp"
         android:backgroundTint="#09104C"
         app:cornerRadius="20dp"/>
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Logout"
+        android:id="@+id/logoutButton"
+        android:textSize="18sp"
+        android:backgroundTint="#09104C"
+        app:cornerRadius="20dp"
+        android:layout_marginBottom="16dp"/>
+
 </LinearLayout>
