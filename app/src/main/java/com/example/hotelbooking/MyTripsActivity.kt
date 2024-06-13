@@ -103,7 +103,7 @@ class MyTripsActivity : AppCompatActivity() {
 
                 // Rezervasyonu iptal etme düğmesinin tıklama dinleyicisi
                 cancelButton.setOnClickListener {
-                    cancelBooking(bookingId, bookingView)
+                    cancelBooking(bookingId, bookingView, hotelId, roomId)
                 }
 
                 // Otele puan ve yorum ekleme düğmesinin tıklama dinleyicisi
@@ -135,11 +135,18 @@ class MyTripsActivity : AppCompatActivity() {
         })
     }
 
-    private fun cancelBooking(bookingId: String, bookingView: View) {
+    private fun cancelBooking(bookingId: String, bookingView: View, hotelId: String, roomId: String) {
         val bookingRef = database.reference.child("bookings").child(bookingId)
         bookingRef.removeValue().addOnCompleteListener { task ->
             if (task.isSuccessful) {
-                binding.profileLl.removeView(bookingView)
+                val roomRef = database.reference.child("hotels").child(hotelId).child("rooms").child(roomId)
+                roomRef.child("availability").setValue(true).addOnCompleteListener { roomTask ->
+                    if (roomTask.isSuccessful) {
+                        binding.profileLl.removeView(bookingView)
+                    } else {
+                        // Handle error
+                    }
+                }
             } else {
                 // Handle error
             }

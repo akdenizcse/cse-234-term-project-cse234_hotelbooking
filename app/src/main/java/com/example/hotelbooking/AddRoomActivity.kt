@@ -92,7 +92,7 @@ class AddRoomActivity : AppCompatActivity() {
             imageRef.putFile(uri)
                 .addOnSuccessListener { taskSnapshot ->
                     taskSnapshot.storage.downloadUrl.addOnSuccessListener { uri ->
-                        val room = Room(roomName, uri.toString(), roomPrice, bedCount, wifiAvailable, bathroomCount)
+                        val room = Room(roomName, uri.toString(), roomPrice, bedCount, wifiAvailable, bathroomCount, true)
 
                         database.reference.child("hotels").child(hotelId).child("rooms").push().setValue(room)
                             .addOnSuccessListener {
@@ -116,6 +116,7 @@ class AddRoomActivity : AppCompatActivity() {
         val price: String = "",
         val bedCount: String = "",
         val wifiAvailable: Boolean = false,
-        val bathroomCount: String = ""
+        val bathroomCount: String = "",
+        val availability: Boolean = true
     )
 }

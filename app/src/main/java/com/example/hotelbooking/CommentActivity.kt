@@ -1,5 +1,6 @@
 package com.example.hotelbooking
 
+import android.util.Log
 import android.os.Bundle
 import android.widget.RatingBar
 import android.widget.Toast
@@ -58,6 +59,24 @@ class CommentActivity : AppCompatActivity() {
 
     private fun addCommentToDatabase(comment: Comment) {
         val databaseReference = FirebaseDatabase.getInstance().reference.child("comments").push()
-        databaseReference.setValue(comment)
+        val commentId = databaseReference.key
+
+        if (commentId != null) {
+            val hotelCommentReference = FirebaseDatabase.getInstance().reference
+                .child("hotels")
+                .child(comment.hotelId)
+                .child("comments")
+                .child(commentId)
+            hotelCommentReference.setValue(true)
+
+            databaseReference.setValue(comment)
+
+            Log.d("CommentActivity", "Comment added with ID: $commentId")
+        } else {
+            Log.e("CommentActivity", "Failed to get comment ID")
+        }
     }
+
+
+
 }

@@ -58,13 +58,24 @@ class PaymentActivity : AppCompatActivity() {
 
         bookingsRef.child(bookingId).setValue(bookingData)
             .addOnSuccessListener {
+                updateRoomAvailability()
+            }
+            .addOnFailureListener { e ->
+                Toast.makeText(this, "Booking Failed: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+    private fun updateRoomAvailability() {
+        val roomRef = database.reference.child("hotels").child(hotelId).child("rooms").child(roomId)
+        roomRef.child("availability").setValue(false)
+            .addOnSuccessListener {
                 Toast.makeText(this, "Booking Successful!", Toast.LENGTH_SHORT).show()
                 val intent = Intent(this, MyTripsActivity::class.java)
                 startActivity(intent)
                 finish()
             }
             .addOnFailureListener { e ->
-                Toast.makeText(this, "Booking Failed: ${e.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Failed to update room availability: ${e.message}", Toast.LENGTH_SHORT).show()
             }
     }
 }
