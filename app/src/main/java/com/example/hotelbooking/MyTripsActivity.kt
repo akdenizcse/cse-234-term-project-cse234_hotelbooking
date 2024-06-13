@@ -117,13 +117,13 @@ class MyTripsActivity : AppCompatActivity() {
                 if (isActive) {
                     cancelButton.visibility = View.VISIBLE
                     cancelButton.setBackgroundColor(ContextCompat.getColor(this@MyTripsActivity, android.R.color.holo_red_dark))
-                    statusButton.text = "Durumu Değiştir"
+                    statusButton.text = "Change Status"
                     statusButton.setBackgroundColor(ContextCompat.getColor(this@MyTripsActivity, android.R.color.holo_red_dark))
                 } else {
                     rateButton.visibility = View.VISIBLE
                     rateButton.setBackgroundColor(ContextCompat.getColor(this@MyTripsActivity, android.R.color.holo_blue_dark))
-                    statusButton.text = "Durumu Değiştir"
-                    statusButton.setBackgroundColor(ContextCompat.getColor(this@MyTripsActivity, android.R.color.black))
+                    statusButton.text = "Change Status"
+                    statusButton.setBackgroundColor(ContextCompat.getColor(this@MyTripsActivity, android.R.color.holo_blue_dark))
                 }
 
                 binding.profileLl.addView(bookingView)
@@ -166,8 +166,8 @@ class MyTripsActivity : AppCompatActivity() {
                     rateButton.visibility = View.VISIBLE
                     rateButton.setBackgroundColor(ContextCompat.getColor(this@MyTripsActivity, android.R.color.holo_blue_dark))
                 }
-                statusButton.text = "Durumu Değiştir"
-                statusButton.setBackgroundColor(ContextCompat.getColor(this@MyTripsActivity, android.R.color.black))
+                statusButton.text = "Change Status"
+                statusButton.setBackgroundColor(ContextCompat.getColor(this@MyTripsActivity, android.R.color.holo_blue_dark))
             } else {
                 // Handle error
             }

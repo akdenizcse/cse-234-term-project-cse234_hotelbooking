@@ -13,7 +13,8 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/aboveScreen">
+        android:id="@+id/aboveScreen"
+        android:layout_marginTop="20dp">
 
         <ImageView
             android:id="@+id/backButton"
@@ -23,7 +24,6 @@
             android:contentDescription="@string/back"
             android:layout_margin="15dp"
             android:padding="8dp" />
-
 
         <TextView
             android:layout_width="match_parent"
@@ -37,102 +37,96 @@
             android:textColor="@color/white" />
     </RelativeLayout>
 
-    <ScrollView
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:layout_below="@id/aboveScreen"
-        android:layout_above="@id/bottomNavigationView"
-        android:layout_marginBottom="30dp">
+        android:layout_above="@id/bottomNavigationView">
 
-        <RelativeLayout
+        <androidx.cardview.widget.CardView
+            android:id="@+id/selection"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginBottom="10dp"
+            app:cardCornerRadius="30dp"
+            app:cardElevation="20dp">
 
-            <androidx.cardview.widget.CardView
-                android:id="@+id/selection"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp"
-                android:layout_marginBottom="10dp"
-                app:cardCornerRadius="30dp"
-                app:cardElevation="20dp">
+                android:orientation="vertical"
+                android:layout_gravity="center_horizontal"
+                android:padding="24dp"
+                android:background="@drawable/custom_edittext">
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:id="@+id/city"
+                    android:background="@drawable/custom_edittext"
+                    android:layout_marginTop="10dp"
+                    android:padding="8dp"
+                    android:hint="@string/where_do_you_want_to_go_next"
+                    android:drawableStart="@drawable/location_24"
+                    android:textColor="@color/black"
+                    android:drawablePadding="8dp" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_gravity="center_horizontal"
-                    android:padding="24dp"
-                    android:background="@drawable/custom_edittext">
+                    android:orientation="horizontal"
+                    android:layout_gravity="center_vertical">
 
                     <EditText
-                        android:layout_width="match_parent"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
                         android:layout_height="50dp"
-                        android:id="@+id/city"
+                        android:id="@+id/departOn"
                         android:background="@drawable/custom_edittext"
-                        android:layout_marginTop="10dp"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginEnd="10dp"
                         android:padding="8dp"
-                        android:hint="@string/where_do_you_want_to_go_next"
-                        android:drawableStart="@drawable/location_24"
+                        android:hint="@string/depart_on"
+                        android:drawableStart="@drawable/calendar_24"
                         android:textColor="@color/black"
-                        android:drawablePadding="8dp"/>
+                        android:drawablePadding="8dp" />
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:layout_gravity="center_vertical">
-
-                        <EditText
-                            android:layout_weight="50"
-                            android:layout_width="0dp"
-                            android:layout_height="50dp"
-                            android:id="@+id/departOn"
-                            android:background="@drawable/custom_edittext"
-                            android:layout_marginTop="20dp"
-                            android:layout_marginEnd="10dp"
-                            android:padding="8dp"
-                            android:hint="@string/depart_on"
-                            android:drawableStart="@drawable/calendar_24"
-                            android:textColor="@color/black"
-                            android:drawablePadding="8dp"/>
-
-                        <EditText
-                            android:layout_weight="50"
-                            android:layout_width="0dp"
-                            android:layout_height="50dp"
-                            android:id="@+id/returnOn"
-                            android:background="@drawable/custom_edittext"
-                            android:layout_marginTop="20dp"
-                            android:padding="8dp"
-                            android:hint="@string/return_on"
-                            android:drawableStart="@drawable/calendar_24"
-                            android:textColor="@color/black"
-                            android:drawablePadding="8dp"/>
-
-                    </LinearLayout>
-                    <Button
-                        android:layout_width="match_parent"
-                        android:layout_height="60dp"
-                        android:text="@string/search"
-                        android:id="@+id/searchButton"
-                        android:textSize="18sp"
-                        android:layout_marginTop="30dp"
-                        android:backgroundTint="#09104C"
-                        app:cornerRadius = "20dp"/>
-
+                    <EditText
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:id="@+id/returnOn"
+                        android:background="@drawable/custom_edittext"
+                        android:layout_marginTop="20dp"
+                        android:padding="8dp"
+                        android:hint="@string/return_on"
+                        android:drawableStart="@drawable/calendar_24"
+                        android:textColor="@color/black"
+                        android:drawablePadding="8dp" />
                 </LinearLayout>
-            </androidx.cardview.widget.CardView>
-        </RelativeLayout>
 
-    </ScrollView>
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:text="@string/search"
+                    android:id="@+id/searchButton"
+                    android:textSize="18sp"
+                    android:layout_marginTop="30dp"
+                    android:backgroundTint="#09104C"
+                    app:cornerRadius="20dp" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+    </RelativeLayout>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigationView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"
-        android:layout_alignParentBottom= "true"
-        app:menu="@menu/bottom_nav_menu"/>
+        android:layout_alignParentBottom="true"
+        app:menu="@menu/bottom_nav_menu" />
 </RelativeLayout>

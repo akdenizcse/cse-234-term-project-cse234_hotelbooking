@@ -68,7 +68,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Show Rooms"
-                android:layout_margin="8dp" />
+                android:layout_margin="8dp"
+                android:backgroundTint="#09104C"/>
 
             <TextView
                 android:id="@+id/roomNameTextView"
@@ -121,7 +122,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Book Now"
-                android:layout_margin="8dp" />
+                android:layout_margin="8dp"
+                android:backgroundTint="#09104C"/>
 
             <TextView
                 android:layout_width="match_parent"

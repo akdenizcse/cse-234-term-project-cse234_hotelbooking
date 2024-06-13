@@ -107,7 +107,8 @@
         app:layout_constraintTop_toBottomOf="@+id/postalCodeEditText"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="32dp" />
+        android:layout_marginTop="32dp"
+        android:backgroundTint="#09104C"/>
 
     <Button
         android:id="@+id/backButton"
@@ -117,6 +118,7 @@
         app:layout_constraintTop_toBottomOf="@+id/saveButton"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp" />
+        android:layout_marginTop="16dp"
+        android:backgroundTint="#09104C"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
