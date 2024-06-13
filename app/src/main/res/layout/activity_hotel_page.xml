@@ -119,10 +119,11 @@
 
             <Button
                 android:id="@+id/bookingNowButton"
-                android:layout_width="wrap_content"
+                android:layout_width="150dp"
                 android:layout_height="wrap_content"
                 android:text="Book Now"
                 android:layout_margin="8dp"
+                android:layout_gravity="center_horizontal"
                 android:backgroundTint="#09104C"/>
 
             <TextView
