@@ -39,17 +39,17 @@ class AddRoomActivity : AppCompatActivity() {
 
         binding.addRoomButton.setOnClickListener {
             val roomName = binding.roomName.text.toString()
-            val roomPrice = binding.roomPrice.text.toString()
-            val bedCount = binding.bedCount.text.toString()
+            val roomPrice = binding.roomPrice.text.toString().toIntOrNull()
+            val bedCount = binding.bedCount.text.toString().toIntOrNull()
             val wifiAvailable = binding.wifiSwitch.isChecked
-            val bathroomCount = binding.bathroomCount.text.toString()
+            val bathroomCount = binding.bathroomCount.text.toString().toIntOrNull()
             val selectedHotelIndex = binding.hotelSpinner.selectedItemPosition
 
-            if (roomName.isNotEmpty() && roomPrice.isNotEmpty() && bedCount.isNotEmpty() && bathroomCount.isNotEmpty() && selectedHotelIndex >= 0 && selectedImageUri != null) {
+            if (roomName.isNotEmpty() && roomPrice != null && bedCount != null && bathroomCount != null && selectedHotelIndex >= 0 && selectedImageUri != null) {
                 val selectedHotelId = hotelIdList[selectedHotelIndex]
                 uploadImageToStorage(selectedHotelId, roomName, roomPrice, bedCount, wifiAvailable, bathroomCount)
             } else {
-                Toast.makeText(this, "All fields are required!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "All fields are required and must be valid!", Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -85,7 +85,7 @@ class AddRoomActivity : AppCompatActivity() {
         }
     }
 
-    private fun uploadImageToStorage(hotelId: String, roomName: String, roomPrice: String, bedCount: String, wifiAvailable: Boolean, bathroomCount: String) {
+    private fun uploadImageToStorage(hotelId: String, roomName: String, roomPrice: Int, bedCount: Int, wifiAvailable: Boolean, bathroomCount: Int) {
         selectedImageUri?.let { uri ->
             val imageRef = storageRef.child("${hotelId}_${roomName}_${System.currentTimeMillis()}")
 
@@ -113,10 +113,10 @@ class AddRoomActivity : AppCompatActivity() {
     data class Room(
         val name: String = "",
         val imageUrl: String = "",
-        val price: String = "",
-        val bedCount: String = "",
+        val price: Int = 0,
+        val bedCount: Int = 0,
         val wifiAvailable: Boolean = false,
-        val bathroomCount: String = "",
+        val bathroomCount: Int = 0,
         val availability: Boolean = true
     )
 }

@@ -73,6 +73,11 @@ class HotelPage : AppCompatActivity() {
                 Glide.with(this@HotelPage).load(hotelImageUrl).into(binding.picDetail)
 
                 rooms = snapshot.child("rooms").children.toList()
+
+                // Set default hotel image if no room is selected
+                if (selectedRoomId == null) {
+                    Glide.with(this@HotelPage).load(hotelImageUrl).into(binding.picDetail)
+                }
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -86,22 +91,25 @@ class HotelPage : AppCompatActivity() {
         val bathroomCount = roomSnapshot.child("bathroomCount").getValue(Int::class.java) ?: 0
         val bedCount = roomSnapshot.child("bedCount").getValue(Int::class.java) ?: 0
         val wifiAvailable = roomSnapshot.child("wifiAvailable").getValue(Boolean::class.java) ?: false
-        val price = roomSnapshot.child("price").getValue(Double::class.java) ?: 0.0
+        val price = roomSnapshot.child("price").getValue(Int::class.java) ?: 0
+        val roomImageUrl = roomSnapshot.child("imageUrl").getValue(String::class.java) ?: ""
 
         binding.roomNameTextView.text = roomName
         binding.bathroomCountTextView.text = "Bathroom Count: $bathroomCount"
         binding.bedCountTextView.text = "Bed Count: $bedCount"
         binding.wifiAvailabilityTextView.text = "WiFi Available: ${if (wifiAvailable) "Yes" else "No"}"
         binding.priceTextView.text = "Price: $$price"
+
+        Glide.with(this).load(roomImageUrl).into(binding.picDetail)
     }
 
     private fun showRoomsDialog() {
-        val sortedRooms = rooms.sortedBy { it.child("price").getValue(Double::class.java) ?: 0.0 }
+        val sortedRooms = rooms.sortedBy { it.child("price").getValue(Int::class.java) ?: 0 }
         val roomIds = sortedRooms.map { it.key }
 
         val roomNamesAndPrices = sortedRooms.map {
             val roomName = it.child("name").getValue(String::class.java) ?: "Unknown"
-            val price = it.child("price").getValue(Double::class.java) ?: 0.0
+            val price = it.child("price").getValue(Int::class.java) ?: 0
             "$roomName - $$price"
         }
 
@@ -184,9 +192,6 @@ class HotelPage : AppCompatActivity() {
             }
         })
     }
-
-
-
 
     private fun showRoomSelectionWarning() {
         val builder = AlertDialog.Builder(this)
