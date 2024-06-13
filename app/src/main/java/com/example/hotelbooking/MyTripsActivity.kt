@@ -116,14 +116,14 @@ class MyTripsActivity : AppCompatActivity() {
                 // Başlangıçta düğme görünürlüğünü ve renklerini ayarla
                 if (isActive) {
                     cancelButton.visibility = View.VISIBLE
-                    cancelButton.setBackgroundColor(ContextCompat.getColor(this@MyTripsActivity, android.R.color.holo_red_dark))
+                    cancelButton.setBackgroundColor(ContextCompat.getColor(this@MyTripsActivity, R.color.red))
                     statusButton.text = "Change Status"
-                    statusButton.setBackgroundColor(ContextCompat.getColor(this@MyTripsActivity, android.R.color.holo_red_dark))
+                    statusButton.setBackgroundColor(ContextCompat.getColor(this@MyTripsActivity, R.color.dark_blue))
                 } else {
                     rateButton.visibility = View.VISIBLE
-                    rateButton.setBackgroundColor(ContextCompat.getColor(this@MyTripsActivity, android.R.color.holo_blue_dark))
+                    rateButton.setBackgroundColor(ContextCompat.getColor(this@MyTripsActivity, R.color.dark_blue))
                     statusButton.text = "Change Status"
-                    statusButton.setBackgroundColor(ContextCompat.getColor(this@MyTripsActivity, android.R.color.holo_blue_dark))
+                    statusButton.setBackgroundColor(ContextCompat.getColor(this@MyTripsActivity, R.color.dark_blue))
                 }
 
                 binding.profileLl.addView(bookingView)
@@ -160,14 +160,14 @@ class MyTripsActivity : AppCompatActivity() {
                 if (!isActive) {
                     rateButton.visibility = View.GONE
                     cancelButton.visibility = View.VISIBLE
-                    cancelButton.setBackgroundColor(ContextCompat.getColor(this@MyTripsActivity, android.R.color.holo_red_dark))
+                    cancelButton.setBackgroundColor(ContextCompat.getColor(this@MyTripsActivity, R.color.red))
                 } else {
                     cancelButton.visibility = View.GONE
                     rateButton.visibility = View.VISIBLE
-                    rateButton.setBackgroundColor(ContextCompat.getColor(this@MyTripsActivity, android.R.color.holo_blue_dark))
+                    rateButton.setBackgroundColor(ContextCompat.getColor(this@MyTripsActivity, R.color.dark_blue))
                 }
                 statusButton.text = "Change Status"
-                statusButton.setBackgroundColor(ContextCompat.getColor(this@MyTripsActivity, android.R.color.holo_blue_dark))
+                statusButton.setBackgroundColor(ContextCompat.getColor(this@MyTripsActivity, R.color.dark_blue))
             } else {
                 // Handle error
             }
